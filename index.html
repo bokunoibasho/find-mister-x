@@ -14,9 +14,46 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>MISTER X を探せ</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        background: #0b1020;
+        color: #e8edf7;
+        font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', sans-serif;
+      }
+      #boot-fallback {
+        display: none;
+        padding: 24px;
+        line-height: 1.7;
+        font-size: 15px;
+      }
+      #boot-fallback code {
+        color: #f59e0b;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
+    <div id="boot-fallback">
+      <h2>ページを読み込めませんでした</h2>
+      <p>
+        ビルド済みのファイルが配信されていない可能性があります。GitHub Pages の
+        <strong>Settings → Pages → Source</strong> を <code>GitHub Actions</code>
+        に設定してください（<code>Deploy from a branch</code> ではソースがそのまま配信され動作しません）。
+      </p>
+    </div>
+    <script>
+      // If the app bundle never mounts (e.g. raw source served instead of the
+      // built output), surface a helpful message instead of a blank screen.
+      window.setTimeout(function () {
+        var root = document.getElementById('root')
+        if (root && root.childElementCount === 0) {
+          var fb = document.getElementById('boot-fallback')
+          if (fb) fb.style.display = 'block'
+        }
+      }, 2500)
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
