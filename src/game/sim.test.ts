@@ -24,20 +24,30 @@ function playToEnd(config: GameConfig) {
 describe('full game simulation (AI vs AI)', () => {
   const difficulties: Difficulty[] = ['easy', 'normal', 'hard']
   for (const difficulty of difficulties) {
-    it(`terminates cleanly on ${difficulty}`, () => {
+    it(`classic terminates cleanly on ${difficulty}`, () => {
       for (let i = 0; i < 12; i++) {
-        const s = playToEnd({ playerRole: 'detective', detectiveCount: 4, difficulty })
+        const s = playToEnd({ playerRole: 'detective', detectiveCount: 4, difficulty, mode: 'classic' })
         expect(isGameOver(s)).toBe(true)
         expect(s.round).toBeLessThanOrEqual(s.totalRounds)
       }
     })
   }
 
+  it('beginner terminates cleanly for both roles', () => {
+    for (const playerRole of ['detective', 'mrx'] as const) {
+      for (let i = 0; i < 12; i++) {
+        const s = playToEnd({ playerRole, detectiveCount: 3, difficulty: 'easy', mode: 'beginner' })
+        expect(isGameOver(s)).toBe(true)
+        expect(s.round).toBeLessThanOrEqual(13)
+      }
+    }
+  })
+
   it('produces both outcomes across many games', () => {
     let detWins = 0
     let mrxWins = 0
     for (let i = 0; i < 40; i++) {
-      const s = playToEnd({ playerRole: 'detective', detectiveCount: 5, difficulty: 'hard' })
+      const s = playToEnd({ playerRole: 'detective', detectiveCount: 5, difficulty: 'hard', mode: 'classic' })
       if (s.phase === 'detective-win') detWins++
       else mrxWins++
     }

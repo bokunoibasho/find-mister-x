@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { setActiveBoard } from '../game/board'
 import { chooseDetectiveMove } from '../game/ai/detectives'
 import { planMrxTurn } from '../game/ai/misterX'
 import {
@@ -9,6 +10,7 @@ import {
   isGameOver,
   mrxTakeMove
 } from '../game/engine'
+import { MODE_PRESETS } from '../game/presets'
 import { isPlayerTurn, movesTo } from '../game/selectors'
 import type { GameConfig, GameState, Move, Ticket } from '../game/types'
 
@@ -64,7 +66,8 @@ export const useGameStore = create<Store>()(
             game,
             aiThinking: false,
             selectedNode: null,
-            doubleArmed: false
+            doubleArmed: false,
+            showBelief: MODE_PRESETS[config.mode].hintDefault
           })
           if (!isPlayerTurn(game)) void get().runAi()
         },
@@ -143,7 +146,16 @@ export const useGameStore = create<Store>()(
     },
     {
       name: 'find-mister-x',
+      version: 2,
+      // Drop saves from older schemas (different board / no mode field).
+      migrate: () => ({}) as unknown as Store,
       partialize: (s) => ({ game: s.game, showBelief: s.showBelief })
     }
   )
 )
+
+// Restore the correct board for a resumed game before the first render.
+const restored = useGameStore.getState().game
+if (restored && MODE_PRESETS[restored.config.mode]) {
+  setActiveBoard(MODE_PRESETS[restored.config.mode].mapId)
+}

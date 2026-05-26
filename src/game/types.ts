@@ -3,6 +3,7 @@ export type Ticket = Transport | 'black'
 export type EdgeType = Transport | 'ferry'
 export type Role = 'detective' | 'mrx'
 export type Difficulty = 'easy' | 'normal' | 'hard'
+export type Mode = 'beginner' | 'classic'
 
 export interface Move {
   to: number
@@ -47,6 +48,7 @@ export interface GameConfig {
   playerRole: Role
   detectiveCount: number
   difficulty: Difficulty
+  mode: Mode
 }
 
 export interface GameState {
@@ -62,4 +64,6 @@ export interface GameState {
   log: LogEntry[]
   /** true while Mr X is in the middle of a double move (one move already made) */
   doubleInProgress: boolean
+  /** beginner detective view: Mr X is shown most rounds (hidden only a few). Drives HUD wording. */
+  mrxMostlyVisible: boolean
 }

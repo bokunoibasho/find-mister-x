@@ -8,8 +8,18 @@ export const TICKET_META: Record<Ticket, { label: string; color: string; short: 
 }
 
 export const EDGE_STYLE: Record<EdgeType, { color: string; width: number; dash?: string; opacity: number }> = {
-  taxi: { color: '#8b94a7', width: 1.1, opacity: 0.5 },
-  bus: { color: '#22c55e', width: 2.2, opacity: 0.65 },
-  underground: { color: '#ef4444', width: 3.4, opacity: 0.7 },
-  ferry: { color: '#38bdf8', width: 2.4, dash: '6 5', opacity: 0.8 }
+  taxi: { color: '#cbd5e1', width: 1.8, opacity: 0.9 },
+  bus: { color: '#34d399', width: 3.2, opacity: 0.95 },
+  underground: { color: '#f87171', width: 4.4, opacity: 0.95 },
+  ferry: { color: '#38bdf8', width: 3.2, dash: '8 6', opacity: 0.95 }
+}
+
+// Dark outline drawn under each route so overlapping lines stay distinguishable.
+export const EDGE_HALO = '#0a0e1c'
+
+export const EDGE_LABEL: Record<EdgeType, string> = {
+  taxi: 'タクシー',
+  bus: 'バス',
+  underground: '地下鉄',
+  ferry: 'フェリー(黒)'
 }

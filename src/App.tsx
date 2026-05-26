@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <div className="game-screen">
-      <Board game={game} />
+      <Board key={game.config.mode} game={game} />
       <Hud game={game} />
       {isGameOver(game) && <GameOver game={game} />}
     </div>

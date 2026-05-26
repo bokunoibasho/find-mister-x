@@ -32,7 +32,7 @@ function scoreMove(state: GameState, move: Move, difficulty: Difficulty): number
   // Use black tickets sparingly: most valuable right after surfacing (to hide
   // the follow-up) — the round just played being a reveal means he just surfaced.
   if (move.ticket === 'black') {
-    const justSurfaced = isRevealRound(state.round + 1)
+    const justSurfaced = isRevealRound(state.reveals, state.round + 1)
     score += justSurfaced ? 0.6 : -0.7
   }
   return score

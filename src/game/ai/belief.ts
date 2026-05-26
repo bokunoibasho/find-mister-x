@@ -1,7 +1,5 @@
-import { board, neighborsByTransport, neighborsWithTypes } from '../board'
+import { allStationIds, neighborsByTransport, neighborsWithTypes } from '../board'
 import type { GameState } from '../types'
-
-const ALL_STATIONS = board.nodes.map((n) => n.id)
 
 /**
  * Possible Mr X locations given his public travel log + reveals, from the
@@ -9,7 +7,7 @@ const ALL_STATIONS = board.nodes.map((n) => n.id)
  * type used each turn, and collapses to the exact station on reveal rounds.
  */
 export function computeBelief(state: GameState): Set<number> {
-  let possible = new Set<number>(ALL_STATIONS)
+  let possible = new Set<number>(allStationIds())
   for (const entry of state.log) {
     if (entry.revealed != null) {
       possible = new Set<number>([entry.revealed])
@@ -28,7 +26,7 @@ export function computeBelief(state: GameState): Set<number> {
   // Mr X cannot be standing on a detective (he'd be caught / wouldn't move there).
   for (const d of state.detectives) possible.delete(d.position)
   if (possible.size === 0) {
-    possible = new Set<number>(ALL_STATIONS)
+    possible = new Set<number>(allStationIds())
     for (const d of state.detectives) possible.delete(d.position)
   }
   return possible

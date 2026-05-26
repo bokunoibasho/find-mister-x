@@ -1,15 +1,6 @@
-import { STATION_COUNT } from './board'
-import {
-  DETECTIVE_PALETTE,
-  DETECTIVE_START_TICKETS,
-  MRX_DOUBLE_MOVES,
-  MRX_START_TICKETS,
-  TOTAL_ROUNDS,
-  anyDetectiveCanMove,
-  detectiveLegalMoves,
-  isRevealRound,
-  mrxCanMove
-} from './rules'
+import { STATION_COUNT, setActiveBoard } from './board'
+import { MODE_PRESETS, buildReveals, mrxMostlyVisible } from './presets'
+import { DETECTIVE_PALETTE, anyDetectiveCanMove, detectiveLegalMoves, mrxCanMove } from './rules'
 import type { Detective, GameConfig, GameState, Move } from './types'
 
 const clone = <T>(v: T): T => structuredClone(v)
@@ -23,35 +14,39 @@ function pickStartPositions(count: number): number[] {
 }
 
 export function createGame(config: GameConfig): GameState {
-  const positions = pickStartPositions(config.detectiveCount + 1)
+  const preset = MODE_PRESETS[config.mode]
+  setActiveBoard(preset.mapId)
+  const count = Math.min(config.detectiveCount, preset.maxDetectives)
+  const positions = pickStartPositions(count + 1)
   const mrxPos = positions[0]
   const detectives: Detective[] = []
-  for (let i = 0; i < config.detectiveCount; i++) {
+  for (let i = 0; i < count; i++) {
     const p = DETECTIVE_PALETTE[i]
     detectives.push({
       id: i,
       name: p.name,
       color: p.color,
       position: positions[i + 1],
-      tickets: { ...DETECTIVE_START_TICKETS }
+      tickets: { ...preset.detectiveTickets }
     })
   }
   return {
     config,
     phase: 'mrx',
     round: 0,
-    totalRounds: TOTAL_ROUNDS,
-    reveals: [...[3, 8, 13, 18, 24]],
+    totalRounds: preset.totalRounds,
+    reveals: buildReveals(preset, config.playerRole),
     mrx: {
       position: mrxPos,
-      tickets: { ...MRX_START_TICKETS },
-      doubleRemaining: MRX_DOUBLE_MOVES,
+      tickets: { ...preset.mrxTickets },
+      doubleRemaining: preset.mrxDoubleMoves,
       lastRevealed: null
     },
     detectives,
     currentDetective: 0,
     log: [],
-    doubleInProgress: false
+    doubleInProgress: false,
+    mrxMostlyVisible: mrxMostlyVisible(preset, config.playerRole)
   }
 }
 
@@ -60,7 +55,7 @@ export function canUseDouble(state: GameState): boolean {
     state.phase === 'mrx' &&
     state.mrx.doubleRemaining > 0 &&
     !state.doubleInProgress &&
-    state.round + 2 <= TOTAL_ROUNDS
+    state.round + 2 <= state.totalRounds
   )
 }
 
@@ -103,7 +98,7 @@ export function mrxTakeMove(state: GameState, move: Move, useDouble = false): Ga
   else s.mrx.tickets[move.ticket] -= 1
   s.mrx.position = move.to
 
-  const reveal = isRevealRound(s.round)
+  const reveal = s.reveals.includes(s.round)
   if (reveal) s.mrx.lastRevealed = move.to
   s.log.push({ round: s.round, ticket: move.ticket, revealed: reveal ? move.to : null })
 
@@ -123,7 +118,7 @@ function advanceDetective(state: GameState): void {
     state.currentDetective = next
     return
   }
-  if (state.round >= TOTAL_ROUNDS) {
+  if (state.round >= state.totalRounds) {
     state.phase = 'mrx-win'
     return
   }

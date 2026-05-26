@@ -160,11 +160,13 @@ button {
   display: block;
 }
 .station-label {
-  font-size: 5px;
-  fill: #475569;
+  fill: #111827;
   text-anchor: middle;
   pointer-events: none;
-  font-weight: 600;
+  font-weight: 700;
+  paint-order: stroke;
+  stroke: #eef2f8;
+  stroke-width: 1.6px;
 }
 .piece-label {
   font-size: 11px;
@@ -173,32 +175,22 @@ button {
   font-weight: 800;
   pointer-events: none;
 }
+/* Static highlights — no continuous animation (avoids constant repaints / heat). */
 .dest-ring {
-  fill: rgba(245, 158, 11, 0.15);
+  fill: rgba(245, 158, 11, 0.22);
   stroke: var(--accent);
-  stroke-width: 2;
-  animation: pulse 1.4s ease-in-out infinite;
+  stroke-width: 2.5;
 }
 .sel-ring {
   fill: none;
   stroke: #fff;
-  stroke-width: 2.5;
+  stroke-width: 3;
 }
-.active-pulse {
+.active-ring {
   fill: none;
   stroke: #fff;
-  stroke-width: 2;
-  opacity: 0.8;
-  animation: pulse 1.2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.35;
-  }
-  50% {
-    opacity: 0.9;
-  }
+  stroke-width: 2.5;
+  opacity: 0.95;
 }
 .reset-view {
   position: absolute;
@@ -497,4 +489,116 @@ button {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* ---------- Active actor panel ---------- */
+.active-actor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  border-radius: 12px;
+  padding: 8px 12px;
+  min-height: 42px;
+}
+.active-actor.waiting {
+  color: var(--muted);
+  font-size: 13px;
+  justify-content: center;
+}
+.aa-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-right: 2px;
+}
+.det-dot.sm {
+  width: 20px;
+  height: 20px;
+  font-size: 11px;
+}
+
+/* ---------- Legend ---------- */
+.legend {
+  position: absolute;
+  left: 10px;
+  top: calc(var(--safe-top) + 56px);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: rgba(12, 19, 34, 0.78);
+  border-radius: 10px;
+  padding: 7px 9px;
+  font-size: 11px;
+  color: var(--text);
+  pointer-events: none;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-line {
+  display: inline-block;
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+}
+.legend-dot {
+  display: inline-block;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+}
+
+/* ---------- How to play ---------- */
+.helpbtn {
+  margin-top: 10px;
+}
+.howto-card {
+  width: 100%;
+  max-width: 440px;
+  max-height: 84vh;
+  overflow-y: auto;
+  background: var(--panel);
+  border-radius: 20px;
+  padding: 22px 20px calc(var(--safe-bottom) + 20px);
+}
+.howto-card h2 {
+  margin: 0 0 12px;
+  text-align: center;
+}
+.howto-card h3 {
+  margin: 16px 0 4px;
+  font-size: 15px;
+  color: var(--accent);
+}
+.howto-card p {
+  margin: 4px 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+}
+.howto-note {
+  background: var(--panel-2);
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 13px !important;
+}
+.howto-legend {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.howto-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.howto-card .start-btn {
+  margin-top: 18px;
 }

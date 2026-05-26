@@ -24,10 +24,10 @@ describe('App smoke test (jsdom)', () => {
     fireEvent.click(screen.getByText('ゲーム開始'))
 
     expect(document.querySelector('svg.board-svg')).toBeTruthy()
-    // 199 station circles + pieces are rendered
-    expect(document.querySelectorAll('svg.board-svg circle').length).toBeGreaterThan(199)
-    // HUD shows the round counter and Mr X's turn
-    expect(screen.getByText('/ 24')).toBeTruthy()
+    // beginner board (~45 stations) each rendered with a hit + base circle, plus pieces
+    expect(document.querySelectorAll('svg.board-svg circle').length).toBeGreaterThan(80)
+    // HUD shows the round counter and Mr X's turn (beginner default = 13 rounds)
+    expect(screen.getByText('/ 13')).toBeTruthy()
     expect(screen.getByText('ミスターXの番')).toBeTruthy()
     // Mr X controls: double-move button present
     expect(screen.getByText(/ダブルムーブ/)).toBeTruthy()

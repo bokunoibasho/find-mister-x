@@ -1,5 +1,8 @@
-import boardData from '../data/board.json'
+import beginnerBoard from '../data/board.beginner.json'
+import classicBoard from '../data/board.classic.json'
 import type { EdgeType, Transport } from './types'
+
+export type MapId = 'classic' | 'beginner'
 
 export interface BoardNode {
   id: number
@@ -14,30 +17,65 @@ export interface BoardEdge {
   type: EdgeType
 }
 
+export interface River {
+  points: [number, number][]
+  width: number
+}
+
 export interface BoardData {
   meta: {
+    id?: string
     width: number
     height: number
     seed: number
     stations: number
     counts: Record<string, number>
+    river?: River
   }
   nodes: BoardNode[]
   edges: BoardEdge[]
   adjacency: Record<string, Record<EdgeType, number[]>>
 }
 
-export const board = boardData as BoardData
+const BOARDS: Record<MapId, BoardData> = {
+  classic: classicBoard as unknown as BoardData,
+  beginner: beginnerBoard as unknown as BoardData
+}
 
-export const STATION_COUNT = board.nodes.length
+// Active board is a live binding: importers (`import { board } ...`) see updates
+// after `setActiveBoard`. Default is the beginner map.
+export let board: BoardData = BOARDS.beginner
+export let STATION_COUNT = board.nodes.length
 
-const nodeById = new Map<number, BoardNode>()
-for (const n of board.nodes) nodeById.set(n.id, n)
+let nodeById = new Map<number, BoardNode>()
+let distanceCache = new Map<number, Int16Array>()
+
+function rebuild(): void {
+  STATION_COUNT = board.nodes.length
+  nodeById = new Map()
+  for (const n of board.nodes) nodeById.set(n.id, n)
+  distanceCache = new Map()
+}
+rebuild()
+
+export function setActiveBoard(id: MapId): void {
+  if (board === BOARDS[id]) return
+  board = BOARDS[id]
+  rebuild()
+}
+
+export function activeMapId(): MapId {
+  return board === BOARDS.beginner ? 'beginner' : 'classic'
+}
 
 export function getNode(id: number): BoardNode {
   const n = nodeById.get(id)
   if (!n) throw new Error(`Unknown station ${id}`)
   return n
+}
+
+export function allStationIds(): number[] {
+  return board.nodes.map((n) => n.id)
 }
 
 export function neighborsByTransport(id: number, transport: Transport): number[] {
@@ -61,8 +99,6 @@ export function neighborsWithTypes(id: number): { to: number; types: EdgeType[] 
   })
   return [...map.entries()].map(([to, types]) => ({ to, types: [...types] }))
 }
-
-const distanceCache = new Map<number, Int16Array>()
 
 /** BFS hop-distance from `source` to every station (any transport = 1 hop). */
 export function distancesFrom(source: number): Int16Array {

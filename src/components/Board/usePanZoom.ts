@@ -123,11 +123,16 @@ export function usePanZoom(boardW: number, boardH: number) {
 
   const reset = useCallback(() => setVb({ x: 0, y: 0, w: boardW, h: boardH }), [boardW, boardH])
 
+  const centerOn = useCallback((x: number, y: number) => {
+    setVb((v) => ({ ...v, x: x - v.w / 2, y: y - v.h / 2 }))
+  }, [])
+
   return {
     svgRef,
     viewBox: vb,
     draggedRef,
     reset,
+    centerOn,
     bind: {
       onPointerDown,
       onPointerMove,
