@@ -163,10 +163,10 @@ button {
   fill: #111827;
   text-anchor: middle;
   pointer-events: none;
-  font-weight: 700;
+  font-weight: 800;
   paint-order: stroke;
   stroke: #eef2f8;
-  stroke-width: 1.6px;
+  stroke-width: 2.4px;
 }
 .piece-label {
   font-size: 11px;
@@ -179,7 +179,7 @@ button {
 .dest-ring {
   fill: rgba(245, 158, 11, 0.22);
   stroke: var(--accent);
-  stroke-width: 2.5;
+  stroke-width: 3;
 }
 .sel-ring {
   fill: none;
