@@ -106,23 +106,27 @@ function Board({ game }: { game: GameState }) {
     return (
       <g key="nodes">
         {board.nodes.map((n) => {
-          const r = (n.kinds.includes('underground') ? 8.5 : n.kinds.includes('bus') ? 7 : 5.5) * scale
+          const baseR = (n.kinds.includes('underground') ? 8.5 : n.kinds.includes('bus') ? 7 : 5.5) * scale
+          const isDest = legalDest.has(n.id)
+          const r = isDest ? baseR * 1.85 : baseR
           const stroke = n.kinds.includes('underground')
             ? '#ef4444'
             : n.kinds.includes('bus')
               ? '#22c55e'
               : '#94a3b8'
+          const hitR = Math.max(15 * scale, r + 8)
           return (
             <g key={n.id} onClick={() => !draggedRef.current && tapNode(n.id)}>
-              <circle cx={n.x} cy={n.y} r={Math.max(15 * scale, r + 7)} fill="transparent" />
-              <circle cx={n.x} cy={n.y} r={r} fill="#eef2f8" stroke={stroke} strokeWidth={2 * scale} />
+              <circle cx={n.x} cy={n.y} r={hitR} fill="transparent" />
+              {isDest && <circle cx={n.x} cy={n.y} r={r + 5 * scale} className="dest-ring" />}
+              <circle cx={n.x} cy={n.y} r={r} fill="#eef2f8" stroke={stroke} strokeWidth={(isDest ? 2.8 : 2) * scale} />
             </g>
           )
         })}
       </g>
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapId])
+  }, [mapId, legalDest])
 
   return (
     <div className="board-wrap">
@@ -153,12 +157,15 @@ function Board({ game }: { game: GameState }) {
             const isDest = legalDest.has(n.id)
             const isSelected = selectedNode === n.id
             const showLabel = labelsAlways || labelsByZoom || isDest || isSelected
+            const baseR = (n.kinds.includes('underground') ? 8.5 : n.kinds.includes('bus') ? 7 : 5.5) * scale
+            const selR = isDest ? baseR * 1.85 + 3 * scale : 15 * scale
+            const labelFs = isDest ? 11 * scale : 8.5 * scale
+            const labelDy = isDest ? 4 * scale : 3 * scale
             return (
               <g key={n.id}>
-                {isDest && <circle cx={n.x} cy={n.y} r={13 * scale} className="dest-ring" />}
-                {isSelected && <circle cx={n.x} cy={n.y} r={15 * scale} className="sel-ring" />}
+                {isSelected && <circle cx={n.x} cy={n.y} r={selR} className="sel-ring" />}
                 {showLabel && (
-                  <text x={n.x} y={n.y + 3 * scale} className="station-label" style={{ fontSize: 6.5 * scale }}>
+                  <text x={n.x} y={n.y + labelDy} className="station-label" style={{ fontSize: labelFs }}>
                     {n.id}
                   </text>
                 )}
